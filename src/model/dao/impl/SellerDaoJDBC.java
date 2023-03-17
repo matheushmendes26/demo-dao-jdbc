@@ -7,7 +7,10 @@ import model.entities.Department;
 import model.entities.Seller;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SellerDaoJDBC implements SellerDao {
 
@@ -37,20 +40,19 @@ public class SellerDaoJDBC implements SellerDao {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try{
-            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/coursejdbc", "root", "1234567");
-           preparedStatement = connection.prepareStatement("SELECT seller.*,department.Name as DepName " +
-                   "FROM seller INNER JOIN department " +
-                   "ON seller.DepartmentId = department.Id " +
-                   "WHERE seller.Id = ?");
-           preparedStatement.setInt(1,id);
-           resultSet = preparedStatement.executeQuery();
+            preparedStatement = connection.prepareStatement("SELECT seller.*,department.Name as DepName " +
+                    "FROM seller INNER JOIN department " +
+                    "ON seller.DepartmentId = department.Id " +
+                    "WHERE seller.Id = ?");
+            preparedStatement.setInt(1,id);
+            resultSet = preparedStatement.executeQuery();
 
-           if(resultSet.next()){
-               Department department = instanciateDepartment(resultSet);
-               Seller seller = instanciateSeller(resultSet,department);
-               return seller;
-           }
-           return null;
+            if(resultSet.next()){
+                Department department = instanciateDepartment(resultSet);
+                Seller seller = instanciateSeller(resultSet,department);
+                return seller;
+            }
+            return null;
 
         }catch (SQLException e1) {
             throw  new DbException(e1.getMessage());
@@ -81,5 +83,37 @@ public class SellerDaoJDBC implements SellerDao {
     @Override
     public List<Seller> findAll(Seller obj) {
         return null;
+    }
+
+    @Override
+    public List<Seller> findByDepartment(Department department) {
+
+
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try{
+            preparedStatement = connection.prepareStatement("SELECT seller.*,department.Name as DepName " +
+                    "FROM seller INNER JOIN department " +
+                    "ON seller.DepartmentId = department.Id " +
+                    "WHERE DepartmentId = ? " +
+                    "ORDER BY Name");
+            preparedStatement.setInt(1,department.getId());
+            resultSet = preparedStatement.executeQuery();
+            List<Seller> list = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+
+
+            while(resultSet.next()){
+                Seller seller = instanciateSeller(resultSet,department);
+                list.add(seller);
+            }
+            return list;
+
+        }catch (SQLException e1) {
+            throw  new DbException(e1.getMessage());
+        }finally {
+            DB.closeStatement(preparedStatement);
+            DB.closeResultSet(resultSet);
+        }
     }
 }
