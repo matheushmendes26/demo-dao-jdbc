@@ -30,5 +30,10 @@ public class Program {
             System.out.println(s);
         }
         System.out.println();
+
+        System.out.println("=== Test 4: Seller findAll===");
+        Seller seller2  = new Seller(null,"Diogo","diogo@gmail.com", new Date(),2000.00,department);
+        sellerDao.insert(seller2);
+        System.out.println();
     }
 }
