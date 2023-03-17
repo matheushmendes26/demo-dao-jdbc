@@ -36,11 +36,16 @@ public class Program {
         //sellerDao.insert(seller2);
         System.out.println();
 
-        System.out.println("=== Test 4: Seller update===");
+        System.out.println("=== Test 5: Seller update===");
         seller  = sellerDao.findById(9);
         seller.setName("Titi");
-        sellerDao.update(seller);
+        System.out.println();
+        //sellerDao.update(seller);
 
+        System.out.println("=== Test 6: Seller delete===");
+        sellerDao.deleteById(8);
+        sellerDao.deleteById(10);
+        sellerDao.deleteById(11);
         System.out.println();
     }
 }
